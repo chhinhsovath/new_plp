@@ -5,7 +5,7 @@ import { useUser } from "@clerk/nextjs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Trophy, Clock, TrendingUp, Users, UserPlus } from "lucide-react";
+import { BookOpen, Trophy, Clock, TrendingUp, Users, UserPlus, FileText, BarChart, MessageSquare, CreditCard, Video } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
@@ -110,6 +110,84 @@ function StudentDashboard({ userData }: { userData: any }) {
             <p className="text-xs text-muted-foreground">This week</p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <Link href="/subjects" className="block">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center">
+                <BookOpen className="h-8 w-8 mb-2 text-blue-600" />
+                <h3 className="font-semibold">Browse Subjects</h3>
+                <p className="text-sm text-gray-600 mt-1">Explore courses</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/assignments" className="block">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center">
+                <FileText className="h-8 w-8 mb-2 text-red-600" />
+                <h3 className="font-semibold">Assignments</h3>
+                <p className="text-sm text-gray-600 mt-1">View & submit</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/progress" className="block">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center">
+                <BarChart className="h-8 w-8 mb-2 text-green-600" />
+                <h3 className="font-semibold">My Progress</h3>
+                <p className="text-sm text-gray-600 mt-1">Track learning</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/forum" className="block">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center">
+                <MessageSquare className="h-8 w-8 mb-2 text-purple-600" />
+                <h3 className="font-semibold">Forum</h3>
+                <p className="text-sm text-gray-600 mt-1">Ask questions</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
+
+      {/* Additional Quick Actions */}
+      <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-8">
+        <Link href="/live" className="block">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center">
+                <Video className="h-8 w-8 mb-2 text-orange-600" />
+                <h3 className="font-semibold">Live Classes</h3>
+                <p className="text-sm text-gray-600 mt-1">Join live sessions</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/payment/manage" className="block">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center">
+                <CreditCard className="h-8 w-8 mb-2 text-indigo-600" />
+                <h3 className="font-semibold">Subscription</h3>
+                <p className="text-sm text-gray-600 mt-1">Manage plan</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -301,15 +379,19 @@ function ParentDashboard({ userData }: { userData: any }) {
 }
 
 function TeacherDashboard({ userData }: { userData: any }) {
+  // Redirect to teacher dashboard
+  if (typeof window !== 'undefined') {
+    window.location.href = '/teacher';
+  }
+  
   return (
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>Teacher Dashboard</CardTitle>
-          <CardDescription>Manage your classes and track student progress</CardDescription>
+          <CardTitle>Redirecting to Teacher Dashboard...</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">Teacher features coming soon...</p>
+          <p className="text-muted-foreground">Please wait...</p>
         </CardContent>
       </Card>
     </div>
