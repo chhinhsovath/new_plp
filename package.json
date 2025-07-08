@@ -1,0 +1,50 @@
+{
+  "name": "plp-monorepo",
+  "version": "1.0.0",
+  "description": "Primary Learning Platform - Modern Stack Migration",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:web": "pnpm -F @plp/web dev",
+    "dev:api": "pnpm -F @plp/api dev",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "db:push": "pnpm -F @plp/database db:push",
+    "db:seed": "pnpm -F @plp/database db:seed",
+    "db:studio": "pnpm -F @plp/database db:studio",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^18.6.1",
+    "@commitlint/config-conventional": "^18.6.3",
+    "@modelcontextprotocol/server-puppeteer": "^2025.5.12",
+    "@upstash/context7-mcp": "^1.0.14",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5",
+    "turbo": "^2.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}
