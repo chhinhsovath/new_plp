@@ -1,0 +1,342 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// NEW SCHEMA - These tables will be created alongside existing ones
+// User Management - new_ prefix to avoid conflicts
+model new_User {
+  id                String    @id @default(cuid())
+  clerkId           String    @unique
+  email             String    @unique
+  firstName         String
+  lastName          String
+  role              new_UserRole
+  preferredLanguage new_Language  @default(KM)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  parent         new_User?           @relation("ParentChild", fields: [parentId], references: [id])
+  parentId       String?
+  children       new_User[]          @relation("ParentChild")
+  studentProfile new_StudentProfile?
+  teacherProfile new_TeacherProfile?
+  progress       new_Progress[]
+  forumPosts     new_ForumPost[]
+  forumAnswers   new_ForumAnswer[]
+  payments       new_Payment[]
+  notifications  new_Notification[]
+  notificationPreferences new_NotificationPreference?
+
+  @@index([email])
+  @@index([clerkId])
+  @@map("new_users")
+}
+
+model new_StudentProfile {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  user       new_User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  grade      String
+  school     String?
+  points     Int      @default(0)
+  level      Int      @default(1)
+  streak     Int      @default(0)
+  lastActive DateTime @default(now())
+
+  @@index([userId])
+  @@map("new_student_profiles")
+}
+
+model new_TeacherProfile {
+  id        String  @id @default(cuid())
+  userId    String  @unique
+  user      new_User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  school    String
+  subjects  Json    // Array of subject IDs
+  verified  Boolean @default(false)
+
+  @@index([userId])
+  @@map("new_teacher_profiles")
+}
+
+// Educational Content
+model new_Subject {
+  id          String   @id @default(cuid())
+  code        String   @unique // e.g., "math", "khmer", "english", "science"
+  name        String
+  nameKh      String
+  description String   @db.Text
+  icon        String?
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+
+  lessons     new_Lesson[]
+  exercises   new_Exercise[]
+  
+  @@map("new_subjects")
+}
+
+model new_Lesson {
+  id          String   @id @default(cuid())
+  subjectId   String
+  subject     new_Subject  @relation(fields: [subjectId], references: [id])
+  title       String
+  titleKh     String
+  description String   @db.Text
+  grade       String
+  order       Int      @default(0)
+  duration    Int      // in minutes
+  active      Boolean  @default(true)
+
+  exercises   new_Exercise[]
+  progress    new_Progress[]
+
+  @@index([subjectId, grade])
+  @@map("new_lessons")
+}
+
+model new_Exercise {
+  id           String       @id @default(cuid())
+  subjectId    String
+  subject      new_Subject      @relation(fields: [subjectId], references: [id])
+  lessonId     String?
+  lesson       new_Lesson?      @relation(fields: [lessonId], references: [id])
+  type         new_ExerciseType
+  title        String
+  titleKh      String
+  instructions String       @db.Text
+  content      Json         // Exercise-specific content
+  solution     Json         // Solution data
+  difficulty   new_Difficulty   @default(EASY)
+  grade        String
+  points       Int          @default(10)
+  order        Int          @default(0)
+  active       Boolean      @default(true)
+
+  attempts     new_ExerciseAttempt[]
+
+  @@index([subjectId, type, grade])
+  @@index([lessonId])
+  @@map("new_exercises")
+}
+
+model new_ExerciseAttempt {
+  id         String   @id @default(cuid())
+  userId     String
+  exerciseId String
+  exercise   new_Exercise @relation(fields: [exerciseId], references: [id])
+  answer     Json
+  isCorrect  Boolean
+  score      Int
+  timeSpent  Int      // in seconds
+  attempts   Int      @default(1)
+  completedAt DateTime @default(now())
+
+  @@index([userId, exerciseId])
+  @@index([completedAt])
+  @@map("new_exercise_attempts")
+}
+
+// Progress Tracking
+model new_Progress {
+  id        String   @id @default(cuid())
+  userId    String
+  user      new_User     @relation(fields: [userId], references: [id])
+  lessonId  String
+  lesson    new_Lesson   @relation(fields: [lessonId], references: [id])
+  completed Boolean  @default(false)
+  score     Float    @default(0)
+  startedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@map("new_progress")
+}
+
+// Forum
+model new_ForumPost {
+  id        String    @id @default(cuid())
+  authorId  String
+  author    new_User      @relation(fields: [authorId], references: [id])
+  subject   String
+  title     String
+  content   String    @db.Text
+  tags      Json      // Array of tags stored as JSON
+  views     Int       @default(0)
+  upvotes   Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  answers   new_ForumAnswer[]
+  savedBy   new_SavedPost[]
+
+  @@index([subject])
+  @@index([createdAt])
+  @@map("new_forum_posts")
+}
+
+model new_ForumAnswer {
+  id        String    @id @default(cuid())
+  postId    String
+  post      new_ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    new_User      @relation(fields: [authorId], references: [id])
+  content   String    @db.Text
+  upvotes   Int       @default(0)
+  accepted  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([postId])
+  @@map("new_forum_answers")
+}
+
+model new_SavedPost {
+  id        String    @id @default(cuid())
+  userId    String
+  postId    String
+  post      new_ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  savedAt   DateTime  @default(now())
+
+  @@unique([userId, postId])
+  @@map("new_saved_posts")
+}
+
+// Payments
+model new_Payment {
+  id              String        @id @default(cuid())
+  userId          String
+  user            new_User          @relation(fields: [userId], references: [id])
+  amount          Float
+  currency        new_Currency
+  status          new_PaymentStatus
+  paymentMethod   String
+  paymentIntentId String?       @unique
+  description     String
+  metadata        Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@map("new_payments")
+}
+
+// Notifications
+model new_Notification {
+  id          String           @id @default(cuid())
+  userId      String
+  user        new_User             @relation(fields: [userId], references: [id])
+  type        new_NotificationType
+  title       String
+  message     String           @db.Text
+  data        Json?            // Additional data specific to notification type
+  read        Boolean          @default(false)
+  readAt      DateTime?
+  createdAt   DateTime         @default(now())
+  
+  @@index([userId, read])
+  @@index([createdAt])
+  @@map("new_notifications")
+}
+
+model new_NotificationPreference {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  user                  new_User     @relation(fields: [userId], references: [id])
+  
+  // Email preferences
+  emailAssignments      Boolean  @default(true)
+  emailGrades          Boolean  @default(true)
+  emailAnnouncements   Boolean  @default(true)
+  emailMessages        Boolean  @default(true)
+  
+  // Push preferences
+  pushAssignments      Boolean  @default(true)
+  pushGrades          Boolean  @default(true)
+  pushAnnouncements   Boolean  @default(true)
+  pushMessages        Boolean  @default(true)
+  pushLiveClasses     Boolean  @default(true)
+  
+  // In-app preferences
+  inAppAll            Boolean  @default(true)
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  @@map("new_notification_preferences")
+}
+
+// Enums with new_ prefix
+enum new_UserRole {
+  STUDENT
+  PARENT
+  TEACHER
+  ADMIN
+}
+
+enum new_Language {
+  KM // Khmer
+  EN // English
+}
+
+enum new_ExerciseType {
+  MULTIPLE_CHOICE
+  FILL_IN_GAPS
+  DRAG_DROP
+  MATCHING
+  TRUE_FALSE
+  SHORT_ANSWER
+  LONG_ANSWER
+  LISTENING
+  SPEAKING
+  DRAWING
+  SORTING
+  SEQUENCING
+  LABELING
+  DICTATION
+  FIND_WORD
+  FIND_LETTER
+  CHOOSE_WORD
+  INPUT
+  SELECT_SENTENCE
+  WRITE_ANSWER
+}
+
+enum new_Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum new_Currency {
+  USD
+  KHR
+}
+
+enum new_PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum new_NotificationType {
+  ASSIGNMENT_CREATED
+  ASSIGNMENT_DUE_SOON
+  ASSIGNMENT_GRADED
+  CLASS_ANNOUNCEMENT
+  LIVE_CLASS_STARTING
+  NEW_MESSAGE
+  ACHIEVEMENT_EARNED
+  SUBSCRIPTION_EXPIRING
+  SYSTEM_ALERT
+}

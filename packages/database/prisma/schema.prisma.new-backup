@@ -1,0 +1,269 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Management
+model User {
+  id                String    @id @default(cuid())
+  clerkId           String    @unique
+  email             String    @unique
+  firstName         String
+  lastName          String
+  role              UserRole
+  preferredLanguage Language  @default(KM)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  parent         User?           @relation("ParentChild", fields: [parentId], references: [id])
+  parentId       String?
+  children       User[]          @relation("ParentChild")
+  studentProfile StudentProfile?
+  teacherProfile TeacherProfile?
+  progress       Progress[]
+  forumPosts     ForumPost[]
+  forumAnswers   ForumAnswer[]
+  payments       Payment[]
+
+  @@index([email])
+  @@index([clerkId])
+}
+
+model StudentProfile {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  grade      String
+  school     String?
+  points     Int      @default(0)
+  level      Int      @default(1)
+  streak     Int      @default(0)
+  lastActive DateTime @default(now())
+
+  @@index([userId])
+}
+
+model TeacherProfile {
+  id        String  @id @default(cuid())
+  userId    String  @unique
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  school    String
+  subjects  Json    // Array of subject IDs
+  verified  Boolean @default(false)
+
+  @@index([userId])
+}
+
+// Educational Content
+model Subject {
+  id          String   @id @default(cuid())
+  code        String   @unique // e.g., "math", "khmer", "english", "science"
+  name        String
+  nameKh      String
+  description String
+  icon        String?
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+
+  lessons     Lesson[]
+  exercises   Exercise[]
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  subjectId   String
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+  title       String
+  titleKh     String
+  description String
+  grade       String
+  order       Int      @default(0)
+  duration    Int      // in minutes
+  active      Boolean  @default(true)
+
+  exercises   Exercise[]
+  progress    Progress[]
+
+  @@index([subjectId, grade])
+}
+
+model Exercise {
+  id           String       @id @default(cuid())
+  subjectId    String
+  subject      Subject      @relation(fields: [subjectId], references: [id])
+  lessonId     String?
+  lesson       Lesson?      @relation(fields: [lessonId], references: [id])
+  type         ExerciseType
+  title        String
+  titleKh      String
+  instructions String
+  content      Json         // Exercise-specific content
+  solution     Json         // Solution data
+  difficulty   Difficulty   @default(EASY)
+  grade        String
+  points       Int          @default(10)
+  order        Int          @default(0)
+  active       Boolean      @default(true)
+
+  attempts     ExerciseAttempt[]
+
+  @@index([subjectId, type, grade])
+  @@index([lessonId])
+}
+
+model ExerciseAttempt {
+  id         String   @id @default(cuid())
+  userId     String
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  answer     Json
+  isCorrect  Boolean
+  score      Int
+  timeSpent  Int      // in seconds
+  attempts   Int      @default(1)
+  completedAt DateTime @default(now())
+
+  @@index([userId, exerciseId])
+  @@index([completedAt])
+}
+
+// Progress Tracking
+model Progress {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  completed Boolean  @default(false)
+  score     Float    @default(0)
+  startedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+}
+
+// Forum
+model ForumPost {
+  id        String    @id @default(cuid())
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id])
+  subject   String
+  title     String
+  content   String    @db.Text
+  tags      String[]
+  views     Int       @default(0)
+  upvotes   Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  answers   ForumAnswer[]
+  savedBy   SavedPost[]
+
+  @@index([subject])
+  @@index([createdAt])
+}
+
+model ForumAnswer {
+  id        String    @id @default(cuid())
+  postId    String
+  post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id])
+  content   String    @db.Text
+  upvotes   Int       @default(0)
+  accepted  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([postId])
+}
+
+model SavedPost {
+  id        String    @id @default(cuid())
+  userId    String
+  postId    String
+  post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  savedAt   DateTime  @default(now())
+
+  @@unique([userId, postId])
+}
+
+// Payments
+model Payment {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  amount          Float
+  currency        Currency
+  status          PaymentStatus
+  paymentMethod   String
+  paymentIntentId String?       @unique
+  description     String
+  metadata        Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+// Enums
+enum UserRole {
+  STUDENT
+  PARENT
+  TEACHER
+  ADMIN
+}
+
+enum Language {
+  KM // Khmer
+  EN // English
+}
+
+enum ExerciseType {
+  MULTIPLE_CHOICE
+  FILL_IN_GAPS
+  DRAG_DROP
+  MATCHING
+  TRUE_FALSE
+  SHORT_ANSWER
+  LONG_ANSWER
+  LISTENING
+  SPEAKING
+  DRAWING
+  SORTING
+  SEQUENCING
+  LABELING
+  DICTATION
+  FIND_WORD
+  FIND_LETTER
+  CHOOSE_WORD
+  INPUT
+  SELECT_SENTENCE
+  WRITE_ANSWER
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum Currency {
+  USD
+  KHR
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}

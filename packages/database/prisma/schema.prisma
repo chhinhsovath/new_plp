@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -29,9 +29,12 @@ model User {
   forumPosts     ForumPost[]
   forumAnswers   ForumAnswer[]
   payments       Payment[]
+  notifications  Notification[]
+  notificationPreferences NotificationPreference?
 
   @@index([email])
   @@index([clerkId])
+  @@map("new_users")
 }
 
 model StudentProfile {
@@ -46,6 +49,7 @@ model StudentProfile {
   lastActive DateTime @default(now())
 
   @@index([userId])
+  @@map("new_student_profiles")
 }
 
 model TeacherProfile {
@@ -57,6 +61,7 @@ model TeacherProfile {
   verified  Boolean @default(false)
 
   @@index([userId])
+  @@map("new_teacher_profiles")
 }
 
 // Educational Content
@@ -65,13 +70,15 @@ model Subject {
   code        String   @unique // e.g., "math", "khmer", "english", "science"
   name        String
   nameKh      String
-  description String
+  description String   @db.Text
   icon        String?
   order       Int      @default(0)
   active      Boolean  @default(true)
 
   lessons     Lesson[]
   exercises   Exercise[]
+  
+  @@map("new_subjects")
 }
 
 model Lesson {
@@ -80,7 +87,7 @@ model Lesson {
   subject     Subject  @relation(fields: [subjectId], references: [id])
   title       String
   titleKh     String
-  description String
+  description String   @db.Text
   grade       String
   order       Int      @default(0)
   duration    Int      // in minutes
@@ -90,6 +97,7 @@ model Lesson {
   progress    Progress[]
 
   @@index([subjectId, grade])
+  @@map("new_lessons")
 }
 
 model Exercise {
@@ -101,7 +109,7 @@ model Exercise {
   type         ExerciseType
   title        String
   titleKh      String
-  instructions String
+  instructions String       @db.Text
   content      Json         // Exercise-specific content
   solution     Json         // Solution data
   difficulty   Difficulty   @default(EASY)
@@ -114,6 +122,7 @@ model Exercise {
 
   @@index([subjectId, type, grade])
   @@index([lessonId])
+  @@map("new_exercises")
 }
 
 model ExerciseAttempt {
@@ -130,6 +139,7 @@ model ExerciseAttempt {
 
   @@index([userId, exerciseId])
   @@index([completedAt])
+  @@map("new_exercise_attempts")
 }
 
 // Progress Tracking
@@ -146,6 +156,7 @@ model Progress {
 
   @@unique([userId, lessonId])
   @@index([userId])
+  @@map("new_progress")
 }
 
 // Forum
@@ -156,7 +167,7 @@ model ForumPost {
   subject   String
   title     String
   content   String    @db.Text
-  tags      String[]
+  tags      Json      // Array of tags stored as JSON
   views     Int       @default(0)
   upvotes   Int       @default(0)
   createdAt DateTime  @default(now())
@@ -167,6 +178,7 @@ model ForumPost {
 
   @@index([subject])
   @@index([createdAt])
+  @@map("new_forum_posts")
 }
 
 model ForumAnswer {
@@ -182,6 +194,7 @@ model ForumAnswer {
   updatedAt DateTime  @updatedAt
 
   @@index([postId])
+  @@map("new_forum_answers")
 }
 
 model SavedPost {
@@ -192,6 +205,7 @@ model SavedPost {
   savedAt   DateTime  @default(now())
 
   @@unique([userId, postId])
+  @@map("new_saved_posts")
 }
 
 // Payments
@@ -211,6 +225,7 @@ model Payment {
 
   @@index([userId])
   @@index([status])
+  @@map("new_payments")
 }
 
 // Enums
@@ -266,4 +281,60 @@ enum PaymentStatus {
   SUCCEEDED
   FAILED
   REFUNDED
+}
+
+enum NotificationType {
+  ASSIGNMENT_CREATED
+  ASSIGNMENT_DUE_SOON
+  ASSIGNMENT_GRADED
+  CLASS_ANNOUNCEMENT
+  LIVE_CLASS_STARTING
+  NEW_MESSAGE
+  ACHIEVEMENT_EARNED
+  SUBSCRIPTION_EXPIRING
+  SYSTEM_ALERT
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id])
+  type        NotificationType
+  title       String
+  message     String           @db.Text
+  data        Json?            // Additional data specific to notification type
+  read        Boolean          @default(false)
+  readAt      DateTime?
+  createdAt   DateTime         @default(now())
+  
+  @@index([userId, read])
+  @@index([createdAt])
+  @@map("new_notifications")
+}
+
+model NotificationPreference {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id])
+  
+  // Email preferences
+  emailAssignments      Boolean  @default(true)
+  emailGrades          Boolean  @default(true)
+  emailAnnouncements   Boolean  @default(true)
+  emailMessages        Boolean  @default(true)
+  
+  // Push preferences
+  pushAssignments      Boolean  @default(true)
+  pushGrades          Boolean  @default(true)
+  pushAnnouncements   Boolean  @default(true)
+  pushMessages        Boolean  @default(true)
+  pushLiveClasses     Boolean  @default(true)
+  
+  // In-app preferences
+  inAppAll            Boolean  @default(true)
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  @@map("new_notification_preferences")
 }

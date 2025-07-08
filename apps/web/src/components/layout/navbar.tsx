@@ -5,6 +5,7 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Home, Trophy, Users, Menu, Shield } from "lucide-react";
 import { useState, useEffect } from "react";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 export function Navbar() {
   const { isSignedIn, user } = useUser();
@@ -88,6 +89,7 @@ export function Navbar() {
                 <span className="hidden md:block text-sm text-gray-600">
                   Hi, {user?.firstName}!
                 </span>
+                <NotificationBell />
                 <UserButton afterSignOutUrl="/" />
               </>
             ) : (

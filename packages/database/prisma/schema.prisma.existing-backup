@@ -1,0 +1,1006 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model user_track {
+  utkID        Int      @id @default(autoincrement())
+  utkUserID    Int?
+  utkChildID   Int?
+  utkAction    String   @db.VarChar(255)
+  utkDetails   String?  @db.Text
+  utkIPAddress String?  @db.VarChar(45)
+  utkUserAgent String?  @db.Text
+  utkDateTime  DateTime @db.DateTime(0)
+
+  @@index([utkAction], map: "utkAction")
+  @@index([utkChildID], map: "utkChildID")
+  @@index([utkDateTime], map: "utkDateTime")
+  @@index([utkUserID], map: "utkUserID")
+  @@map("__user_track")
+}
+
+model elfinder_file {
+  id        Int                  @id @default(autoincrement()) @db.UnsignedInt
+  parent_id Int                  @db.UnsignedInt
+  name      String               @db.VarChar(255)
+  content   Bytes
+  size      Int                  @default(0) @db.UnsignedInt
+  mtime     Int                  @default(0) @db.UnsignedInt
+  mime      String               @default("unknown") @db.VarChar(256)
+  read      elfinder_file_read   @default(dbgenerated("1"))
+  write     elfinder_file_write  @default(dbgenerated("1"))
+  locked    elfinder_file_locked @default(dbgenerated("0"))
+  hidden    elfinder_file_hidden @default(dbgenerated("0"))
+  width     Int                  @default(0)
+  height    Int                  @default(0)
+
+  @@unique([parent_id, name], map: "parent_name")
+  @@index([parent_id], map: "parent_id")
+}
+
+model elfinder_trash {
+  id        Int                   @id @default(autoincrement()) @db.UnsignedInt
+  parent_id Int                   @db.UnsignedInt
+  name      String                @db.VarChar(255)
+  content   Bytes
+  size      Int                   @default(0) @db.UnsignedInt
+  mtime     Int                   @default(0) @db.UnsignedInt
+  mime      String                @default("unknown") @db.VarChar(256)
+  read      elfinder_trash_read   @default(dbgenerated("1"))
+  write     elfinder_trash_write  @default(dbgenerated("1"))
+  locked    elfinder_trash_locked @default(dbgenerated("0"))
+  hidden    elfinder_trash_hidden @default(dbgenerated("0"))
+  width     Int                   @default(0)
+  height    Int                   @default(0)
+
+  @@unique([parent_id, name], map: "parent_name")
+  @@index([parent_id], map: "parent_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_admin_test_randomization {
+  atrID          Int      @id @default(autoincrement())
+  atrAdminID     Int
+  atrSettings    String?  @db.Text
+  atrCreatedDate DateTime @db.DateTime(0)
+
+  @@index([atrAdminID], map: "atrAdminID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_answer {
+  ansID        Int       @id @default(autoincrement())
+  ansExcID     Int
+  ansIndex     Int       @default(0)
+  ansValue     String    @db.Text
+  ansImage     String?   @db.VarChar(255)
+  ansSound     String?   @db.VarChar(255)
+  ansAnswer    Boolean   @default(false)
+  fackans      String?   @db.Text
+  ansInputBy   Int?
+  ansInputDate DateTime? @db.DateTime(0)
+  ansStatus    Boolean   @default(true)
+
+  @@index([ansAnswer], map: "ansAnswer")
+  @@index([ansExcID], map: "ansExcID")
+  @@index([ansStatus], map: "ansStatus")
+}
+
+model tbl_answer_english {
+  ansID        Int       @id @default(autoincrement())
+  ansExcID     Int
+  ansIndex     Int       @default(0)
+  ansValue     String    @db.Text
+  ansImage     String?   @db.VarChar(255)
+  ansSound     String?   @db.VarChar(255)
+  ansAnswer    Boolean   @default(false)
+  fackans      String?   @db.Text
+  ansInputBy   Int?
+  ansInputDate DateTime? @db.DateTime(0)
+  ansStatus    Boolean   @default(true)
+
+  @@index([ansAnswer], map: "ansAnswer")
+  @@index([ansExcID], map: "ansExcID")
+  @@index([ansStatus], map: "ansStatus")
+}
+
+model tbl_answer_khmer {
+  ansID        Int       @id @default(autoincrement())
+  ansExcID     Int
+  ansIndex     Int       @default(0)
+  ansValue     String    @db.Text
+  ansImage     String?   @db.VarChar(255)
+  ansSound     String?   @db.VarChar(255)
+  ansAnswer    Boolean   @default(false)
+  fackans      String?   @db.Text
+  ansInputBy   Int?
+  ansInputDate DateTime? @db.DateTime(0)
+  ansStatus    Boolean   @default(true)
+
+  @@index([ansAnswer], map: "ansAnswer")
+  @@index([ansExcID], map: "ansExcID")
+  @@index([ansStatus], map: "ansStatus")
+}
+
+model tbl_answer_math {
+  ansID        Int       @id @default(autoincrement())
+  ansExcID     Int
+  ansIndex     Int       @default(0)
+  ansValue     String    @db.Text
+  ansImage     String?   @db.VarChar(255)
+  ansSound     String?   @db.VarChar(255)
+  ansAnswer    Boolean   @default(false)
+  fackans      String?   @db.Text
+  ansInputBy   Int?
+  ansInputDate DateTime? @db.DateTime(0)
+  ansStatus    Boolean   @default(true)
+
+  @@index([ansAnswer], map: "ansAnswer")
+  @@index([ansExcID], map: "ansExcID")
+  @@index([ansStatus], map: "ansStatus")
+}
+
+model tbl_answer_science {
+  ansID        Int       @id @default(autoincrement())
+  ansExcID     Int
+  ansIndex     Int       @default(0)
+  ansValue     String    @db.Text
+  ansImage     String?   @db.VarChar(255)
+  ansSound     String?   @db.VarChar(255)
+  ansAnswer    Boolean   @default(false)
+  fackans      String?   @db.Text
+  ansInputBy   Int?
+  ansInputDate DateTime? @db.DateTime(0)
+  ansStatus    Boolean   @default(true)
+
+  @@index([ansAnswer], map: "ansAnswer")
+  @@index([ansExcID], map: "ansExcID")
+  @@index([ansStatus], map: "ansStatus")
+}
+
+model tbl_book {
+  bokID           Int      @id @default(autoincrement())
+  bokTitle        String   @db.VarChar(255)
+  bokTitleKH      String?  @db.VarChar(255)
+  bokAuthor       String?  @db.VarChar(255)
+  bokDescription  String?  @db.Text
+  bokCoverImage   String?  @db.VarChar(255)
+  bokPDFFile      String?  @db.VarChar(255)
+  bokCategory     Int?
+  bokGrade        String?  @db.VarChar(50)
+  bokSubject      String?  @db.VarChar(50)
+  bokPages        Int?
+  bokViews        Int?     @default(0)
+  bokUploadedBy   Int?
+  bokUploadedDate DateTime @db.DateTime(0)
+  bokStatus       Boolean  @default(true)
+
+  @@index([bokCategory], map: "bokCategory")
+  @@index([bokSubject], map: "bokSubject")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_card_price {
+  cprID          Int     @id @default(autoincrement())
+  cprDuration    Int
+  cprPrice       Decimal @db.Decimal(10, 2)
+  cprCurrency    String? @default("USD") @db.VarChar(10)
+  cprDescription String? @db.VarChar(255)
+  cprOrder       Int?    @default(0)
+  cprStatus      Boolean @default(true)
+}
+
+model tbl_categories {
+  catID          Int     @id @default(autoincrement())
+  catAlias       String  @unique(map: "catAlias") @db.VarChar(255)
+  catTitle       String  @db.VarChar(255)
+  catTitleKH     String? @db.VarChar(255)
+  catParent      Int?    @default(0)
+  catLevel       Int?    @default(0)
+  catOrder       Int?    @default(0)
+  catImage       String? @db.VarChar(255)
+  catDescription String? @db.Text
+  catScore       Int?    @default(0)
+  catStatus      Boolean @default(true)
+
+  @@index([catParent], map: "catParent")
+  @@index([catStatus], map: "catStatus")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_child {
+  chiID                 Int                    @id @default(autoincrement())
+  chiUID                Int
+  chiName               String                 @db.VarChar(255)
+  chiProfile            String?                @db.VarChar(255)
+  chiGrade              String?                @db.VarChar(50)
+  chiPassword           String?                @db.VarChar(255)
+  chiGender             tbl_child_chiGender?
+  chiBirthDate          DateTime?              @db.Date
+  chiCreatedDate        DateTime               @db.DateTime(0)
+  chiStatus             Boolean                @default(true)
+  tbl_users_register    tbl_users_register     @relation(fields: [chiUID], references: [usrID], onDelete: Cascade, onUpdate: Restrict, map: "fk_child_user")
+  tbl_child_information tbl_child_information?
+
+  @@index([chiUID], map: "chiUID")
+}
+
+model tbl_child_information {
+  chiID       Int       @id
+  chiSchool   String?   @db.VarChar(255)
+  chiProvince String?   @db.VarChar(100)
+  chiDistrict String?   @db.VarChar(100)
+  chiCommune  String?   @db.VarChar(100)
+  chiNotes    String?   @db.Text
+  tbl_child   tbl_child @relation(fields: [chiID], references: [chiID], onDelete: Cascade, onUpdate: Restrict, map: "fk_child_info")
+}
+
+model tbl_commune {
+  comID         Int     @id @default(autoincrement())
+  comDistrictID Int
+  comCode       String? @db.VarChar(10)
+  comName       String  @db.VarChar(100)
+  comNameKH     String? @db.VarChar(100)
+  comOrder      Int?    @default(0)
+
+  @@index([comDistrictID], map: "comDistrictID")
+}
+
+model tbl_counter_ip {
+  cipID        Int      @id @default(autoincrement())
+  cipIP        String   @db.VarChar(45)
+  cipDateTime  DateTime @db.DateTime(0)
+  cipUserAgent String?  @db.Text
+  cipPage      String?  @db.VarChar(255)
+
+  @@index([cipDateTime], map: "cipDateTime")
+  @@index([cipIP], map: "cipIP")
+}
+
+model tbl_counter_values {
+  cvID             Int      @id @default(autoincrement())
+  cvDate           DateTime @unique(map: "cvDate") @db.Date
+  cvPageViews      Int?     @default(0)
+  cvUniqueVisitors Int?     @default(0)
+  cvRegistrations  Int?     @default(0)
+  cvLogins         Int?     @default(0)
+}
+
+model tbl_destrict {
+  disID         Int     @id @default(autoincrement())
+  disProvinceID Int
+  disCode       String? @db.VarChar(10)
+  disName       String  @db.VarChar(100)
+  disNameKH     String? @db.VarChar(100)
+  disOrder      Int?    @default(0)
+
+  @@index([disProvinceID], map: "disProvinceID")
+}
+
+model tbl_ebook {
+  ebkID            Int     @id @default(autoincrement())
+  ebkBookID        Int
+  ebkFormat        String? @default("PDF") @db.VarChar(20)
+  ebkFileSize      Int?
+  ebkDownloadCount Int?    @default(0)
+  ebkStatus        Boolean @default(true)
+
+  @@index([ebkBookID], map: "ebkBookID")
+}
+
+model tbl_english_exercise {
+  excID          Int       @id @default(autoincrement())
+  excCategory    Int
+  excTitle       String    @db.VarChar(500)
+  excInstruction String?   @db.Text
+  excQuestion    String?   @db.Text
+  excImage       String?   @db.VarChar(255)
+  excSound       String?   @db.VarChar(255)
+  excVideo       String?   @db.VarChar(255)
+  excLevel       Int?
+  excType        String?   @db.VarChar(50)
+  excStyle       String?   @db.Text
+  excAnsRand     Boolean?  @default(false)
+  excOrder       Int?      @default(0)
+  excInputBy     Int?
+  excInputDate   DateTime? @db.DateTime(0)
+  excStatus      Boolean   @default(true)
+  excParentID    Int?      @default(0)
+
+  @@index([excCategory], map: "excCategory")
+  @@index([excLevel], map: "excLevel")
+  @@index([excStatus], map: "excStatus")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_exercise {
+  excID          Int       @id @default(autoincrement())
+  excCategory    Int
+  excTitle       String    @db.VarChar(500)
+  excInstruction String?   @db.Text
+  excQuestion    String?   @db.Text
+  excImage       String?   @db.VarChar(255)
+  excSound       String?   @db.VarChar(255)
+  excVideo       String?   @db.VarChar(255)
+  excLevel       Int?
+  excType        String?   @db.VarChar(50)
+  excStyle       String?   @db.Text
+  excAnsRand     Boolean?  @default(false)
+  excOrder       Int?      @default(0)
+  excInputBy     Int?
+  excInputDate   DateTime? @db.DateTime(0)
+  excStatus      Boolean   @default(true)
+  excParentID    Int?      @default(0)
+
+  @@index([excCategory], map: "excCategory")
+  @@index([excLevel], map: "excLevel")
+  @@index([excParentID], map: "excParentID")
+  @@index([excStatus], map: "excStatus")
+}
+
+model tbl_forum_categorories {
+  frcAutoID      Int     @id @default(autoincrement())
+  frcTitle       String  @db.VarChar(255)
+  frcTitleKH     String? @db.VarChar(255)
+  frcDescription String? @db.Text
+  frcIcon        String? @db.VarChar(255)
+  frcOrder       Int?    @default(0)
+  frcStatus      Boolean @default(true)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_forum_post {
+  frpAutoID     Int      @id @default(autoincrement())
+  frpCategories Int
+  frpQuestion   String   @db.VarChar(500)
+  frpDetail     String?  @db.Text
+  frpImage      String?  @db.VarChar(255)
+  frpPostBy     Int
+  frpParent     Int?
+  frpDateTime   DateTime @db.DateTime(0)
+  frpViews      Int?     @default(0)
+  frpStatus     Int      @default(2) @db.TinyInt
+  frpPinned     Boolean? @default(false)
+
+  @@index([frpCategories], map: "frpCategories")
+  @@index([frpParent], map: "frpParent")
+  @@index([frpPostBy], map: "frpPostBy")
+  @@index([frpStatus], map: "frpStatus")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_forum_post_answer {
+  fpaAutoID     Int      @id @default(autoincrement())
+  fpaPostId     Int
+  fpaAnswer     String   @db.Text
+  fpaPostBy     Int
+  fpaParent     Int?
+  fpaDateTime   DateTime @db.DateTime(0)
+  fpaStatus     Boolean  @default(true)
+  fpaBestAnswer Boolean? @default(false)
+
+  @@index([fpaParent], map: "fpaParent")
+  @@index([fpaPostBy], map: "fpaPostBy")
+  @@index([fpaPostId], map: "fpaPostId")
+  @@index([fpaStatus], map: "fpaStatus")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_forum_post_answer_rating {
+  fpaAutoID   Int      @id @default(autoincrement())
+  fpaAnswerId Int
+  fpaUserID   Int
+  fpaRating   Boolean
+  fpaDateTime DateTime @db.DateTime(0)
+
+  @@unique([fpaAnswerId, fpaUserID], map: "unique_rating")
+  @@index([fpaAnswerId], map: "fpaAnswerId")
+  @@index([fpaUserID], map: "fpaUserID")
+}
+
+model tbl_forum_post_saved {
+  fpsID        Int      @id @default(autoincrement())
+  fpsPostId    Int
+  fpsUserID    Int
+  fpsSavedDate DateTime @db.DateTime(0)
+
+  @@unique([fpsPostId, fpsUserID], map: "unique_saved")
+  @@index([fpsPostId], map: "fpsPostId")
+  @@index([fpsUserID], map: "fpsUserID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_generate_card {
+  gcnID            Int       @id @default(autoincrement())
+  gcnCardNumber    String    @unique(map: "gcnCardNumber") @db.VarChar(16)
+  gcnNoChilde      Int?      @default(1)
+  gcnAmount        Decimal   @db.Decimal(10, 2)
+  gcnDuration      Int
+  gcnSubjects      String?   @db.Text
+  gcnGeneratedBy   Int?
+  gcnGeneratedDate DateTime  @db.DateTime(0)
+  gcnUsedBy        Int?
+  gcnUsedDate      DateTime? @db.DateTime(0)
+  gcnStatus        Boolean   @default(true)
+
+  @@index([gcnStatus], map: "gcnStatus")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_homework_task {
+  hwtID          Int      @id @default(autoincrement())
+  hwtParentID    Int
+  hwtTitle       String   @db.VarChar(255)
+  hwtDetail      String?  @db.Text
+  hwtSubject     String?  @db.VarChar(50)
+  hwtGrade       String?  @db.VarChar(50)
+  hwtExpiredDate DateTime @db.DateTime(0)
+  hwtVideoLinks  String?  @db.Text
+  hwtOtherFiles  String?  @db.Text
+  hwtImages      String?  @db.Text
+  hwtCreatedDate DateTime @db.DateTime(0)
+  hwtStatus      Boolean  @default(true)
+
+  @@index([hwtExpiredDate], map: "hwtExpiredDate")
+  @@index([hwtParentID], map: "hwtParentID")
+}
+
+model tbl_khmer_exercise {
+  excID          Int       @id @default(autoincrement())
+  excCategory    Int
+  excTitle       String    @db.VarChar(500)
+  excInstruction String?   @db.Text
+  excQuestion    String?   @db.Text
+  excImage       String?   @db.VarChar(255)
+  excSound       String?   @db.VarChar(255)
+  excVideo       String?   @db.VarChar(255)
+  excLevel       Int?
+  excType        String?   @db.VarChar(50)
+  excStyle       String?   @db.Text
+  excAnsRand     Boolean?  @default(false)
+  excOrder       Int?      @default(0)
+  excInputBy     Int?
+  excInputDate   DateTime? @db.DateTime(0)
+  excStatus      Boolean   @default(true)
+  excParentID    Int?      @default(0)
+
+  @@index([excCategory], map: "excCategory")
+  @@index([excLevel], map: "excLevel")
+  @@index([excStatus], map: "excStatus")
+}
+
+model tbl_level {
+  levID     Int     @id @default(autoincrement())
+  levName   String  @db.VarChar(100)
+  levNameKH String? @db.VarChar(100)
+  levOrder  Int?    @default(0)
+  levStatus Boolean @default(true)
+}
+
+model tbl_math_exercise {
+  excID          Int       @id @default(autoincrement())
+  excCategory    Int
+  excTitle       String    @db.VarChar(500)
+  excInstruction String?   @db.Text
+  excQuestion    String?   @db.Text
+  excImage       String?   @db.VarChar(255)
+  excSound       String?   @db.VarChar(255)
+  excVideo       String?   @db.VarChar(255)
+  excLevel       Int?
+  excType        String?   @db.VarChar(50)
+  excStyle       String?   @db.Text
+  excAnsRand     Boolean?  @default(false)
+  excOrder       Int?      @default(0)
+  excInputBy     Int?
+  excInputDate   DateTime? @db.DateTime(0)
+  excStatus      Boolean   @default(true)
+  excParentID    Int?      @default(0)
+
+  @@index([excCategory], map: "excCategory")
+  @@index([excLevel], map: "excLevel")
+  @@index([excStatus], map: "excStatus")
+}
+
+model tbl_page {
+  pagID              Int       @id @default(autoincrement())
+  pagSlug            String    @unique(map: "pagSlug") @db.VarChar(255)
+  pagTitle           String    @db.VarChar(255)
+  pagTitleKH         String?   @db.VarChar(255)
+  pagContent         String?   @db.LongText
+  pagContentKH       String?   @db.LongText
+  pagMetaTitle       String?   @db.VarChar(255)
+  pagMetaDescription String?   @db.Text
+  pagMetaKeywords    String?   @db.Text
+  pagOrder           Int?      @default(0)
+  pagCreatedBy       Int?
+  pagCreatedDate     DateTime  @db.DateTime(0)
+  pagModifiedDate    DateTime? @db.DateTime(0)
+  pagStatus          Boolean   @default(true)
+}
+
+model tbl_permission_admin {
+  perID     Int      @id @default(autoincrement())
+  perUserID Int
+  perMenuID Int
+  perView   Boolean? @default(false)
+  perInsert Boolean? @default(false)
+  perUpdate Boolean? @default(false)
+  perDelete Boolean? @default(false)
+
+  @@unique([perUserID, perMenuID], map: "unique_permission")
+  @@index([perMenuID], map: "perMenuID")
+  @@index([perUserID], map: "perUserID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_playlists {
+  plID          Int      @id @default(autoincrement())
+  plTitle       String   @db.VarChar(255)
+  plTitleKH     String?  @db.VarChar(255)
+  plDescription String?  @db.Text
+  plVideos      String?  @db.Text
+  plCategory    Int?
+  plCreatedBy   Int?
+  plCreatedDate DateTime @db.DateTime(0)
+  plStatus      Boolean  @default(true)
+
+  @@index([plCategory], map: "plCategory")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_practise_history {
+  phiID               Int                                       @id @default(autoincrement())
+  phiUserID           Int?
+  phiChildID          Int?
+  phiCategory         Int
+  phiExerciseID       Int
+  phiScore            Int?                                      @default(0)
+  phiAttempts         Int?                                      @default(1)
+  phiTimeTaken        Int?
+  phiCompletionStatus tbl_practise_history_phiCompletionStatus? @default(started)
+  phiStartTime        DateTime                                  @db.DateTime(0)
+  phiEndTime          DateTime?                                 @db.DateTime(0)
+
+  @@index([phiCategory], map: "phiCategory")
+  @@index([phiChildID], map: "phiChildID")
+  @@index([phiExerciseID], map: "phiExerciseID")
+  @@index([phiUserID], map: "phiUserID")
+}
+
+model tbl_province {
+  proID     Int     @id @default(autoincrement())
+  proCode   String? @db.VarChar(10)
+  proName   String  @db.VarChar(100)
+  proNameKH String? @db.VarChar(100)
+  proOrder  Int?    @default(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_request_add_card {
+  racID            Int       @id @default(autoincrement())
+  racUserID        Int
+  racSubject       String?   @db.Text
+  racDuration      Int
+  racNumChild      Int?      @default(1)
+  racPrice         Decimal   @db.Decimal(10, 2)
+  racDateTime      DateTime  @db.DateTime(0)
+  racAgencyAccount String?   @db.VarChar(255)
+  racImage         String?   @db.VarChar(255)
+  racType          Boolean?  @default(true)
+  racTransactionID String?   @db.VarChar(255)
+  racApprovedBy    Int?
+  racApprovedDate  DateTime? @db.DateTime(0)
+  racStatus        Boolean   @default(false)
+
+  @@index([racStatus], map: "racStatus")
+  @@index([racUserID], map: "racUserID")
+}
+
+model tbl_school_branches {
+  scbID          Int      @id @default(autoincrement())
+  scbSchoolID    Int
+  scbName        String   @db.VarChar(255)
+  scbCode        String?  @db.VarChar(50)
+  scbPhone       String?  @db.VarChar(20)
+  scbEmail       String?  @db.VarChar(255)
+  scbPassword    String?  @db.VarChar(255)
+  scbRole        String?  @db.VarChar(50)
+  scbCreatedDate DateTime @db.DateTime(0)
+  scbStatus      Boolean  @default(true)
+
+  @@index([scbSchoolID], map: "scbSchoolID")
+}
+
+model tbl_school_list {
+  schID           Int      @id @default(autoincrement())
+  schCode         String?  @unique(map: "schCode") @db.VarChar(50)
+  schName         String   @db.VarChar(255)
+  schNameKH       String?  @db.VarChar(255)
+  schProvince     Int?
+  schDistrict     Int?
+  schCommune      Int?
+  schAddress      String?  @db.Text
+  schPhone        String?  @db.VarChar(20)
+  schEmail        String?  @db.VarChar(255)
+  schPrincipal    String?  @db.VarChar(255)
+  schStudentCount Int?     @default(0)
+  schTeacherCount Int?     @default(0)
+  schCreatedDate  DateTime @db.DateTime(0)
+  schStatus       Boolean  @default(true)
+
+  @@index([schCommune], map: "schCommune")
+  @@index([schDistrict], map: "schDistrict")
+  @@index([schProvince], map: "schProvince")
+}
+
+model tbl_science_exercise {
+  excID          Int       @id @default(autoincrement())
+  excCategory    Int
+  excTitle       String    @db.VarChar(500)
+  excInstruction String?   @db.Text
+  excQuestion    String?   @db.Text
+  excImage       String?   @db.VarChar(255)
+  excSound       String?   @db.VarChar(255)
+  excVideo       String?   @db.VarChar(255)
+  excLevel       Int?
+  excType        String?   @db.VarChar(50)
+  excStyle       String?   @db.Text
+  excAnsRand     Boolean?  @default(false)
+  excOrder       Int?      @default(0)
+  excInputBy     Int?
+  excInputDate   DateTime? @db.DateTime(0)
+  excStatus      Boolean   @default(true)
+  excParentID    Int?      @default(0)
+
+  @@index([excCategory], map: "excCategory")
+  @@index([excLevel], map: "excLevel")
+  @@index([excStatus], map: "excStatus")
+}
+
+model tbl_subjx1_exercise {
+  excID          Int       @id @default(autoincrement())
+  excCategory    Int
+  excTitle       String    @db.VarChar(500)
+  excInstruction String?   @db.Text
+  excQuestion    String?   @db.Text
+  excImage       String?   @db.VarChar(255)
+  excSound       String?   @db.VarChar(255)
+  excVideo       String?   @db.VarChar(255)
+  excLevel       Int?
+  excType        String?   @db.VarChar(50)
+  excStyle       String?   @db.Text
+  excAnsRand     Boolean?  @default(false)
+  excOrder       Int?      @default(0)
+  excInputBy     Int?
+  excInputDate   DateTime? @db.DateTime(0)
+  excStatus      Boolean   @default(true)
+  excParentID    Int?      @default(0)
+
+  @@index([excCategory], map: "excCategory")
+  @@index([excLevel], map: "excLevel")
+  @@index([excStatus], map: "excStatus")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_submit_homework {
+  shwID            Int                            @id @default(autoincrement())
+  shwTaskID        Int
+  shwChildID       Int
+  shwSubmission    String?                        @db.Text
+  shwFiles         String?                        @db.Text
+  shwSubmittedDate DateTime                       @db.DateTime(0)
+  shwScore         Int?
+  shwFeedback      String?                        @db.Text
+  shwGradedBy      Int?
+  shwGradedDate    DateTime?                      @db.DateTime(0)
+  shwStatus        tbl_submit_homework_shwStatus? @default(submitted)
+
+  @@index([shwChildID], map: "shwChildID")
+  @@index([shwTaskID], map: "shwTaskID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_teacher_information {
+  teaID       Int       @id @default(autoincrement())
+  teaUserID   Int?
+  teaSchoolID Int?
+  teaBranchID Int?
+  teaFullName String    @db.VarChar(255)
+  teaPhone    String?   @db.VarChar(20)
+  teaEmail    String?   @db.VarChar(255)
+  teaSubjects String?   @db.Text
+  teaGrades   String?   @db.Text
+  teaJoinDate DateTime? @db.Date
+  teaStatus   Boolean   @default(true)
+
+  @@index([teaBranchID], map: "teaBranchID")
+  @@index([teaSchoolID], map: "teaSchoolID")
+  @@index([teaUserID], map: "teaUserID")
+}
+
+model tbl_test_answer {
+  tanID      Int     @id @default(autoincrement())
+  tanTexID   Int
+  tanAnswer  String  @db.Text
+  tanImage   String? @db.VarChar(255)
+  tanCorrect Boolean @default(false)
+  tanOrder   Int?    @default(0)
+
+  @@index([tanTexID], map: "tanTexID")
+}
+
+model tbl_test_categories {
+  tcaID          Int     @id @default(autoincrement())
+  tcaName        String  @db.VarChar(255)
+  tcaNameKH      String? @db.VarChar(255)
+  tcaDescription String? @db.Text
+  tcaOrder       Int?    @default(0)
+  tcaStatus      Boolean @default(true)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_test_examinations {
+  exaID             Int       @id @default(autoincrement())
+  exaTitle          String    @db.VarChar(255)
+  exaTitleKH        String?   @db.VarChar(255)
+  exaCategory       Int
+  exaDescription    String?   @db.Text
+  exaDuration       Int?      @default(60)
+  exaTotalQuestions Int?      @default(20)
+  exaPassScore      Int?      @default(50)
+  exaStartDate      DateTime? @db.DateTime(0)
+  exaEndDate        DateTime? @db.DateTime(0)
+  exaStatus         Boolean   @default(true)
+
+  @@index([exaCategory], map: "exaCategory")
+}
+
+model tbl_test_examinations_category {
+  tecID          Int     @id @default(autoincrement())
+  tecName        String  @db.VarChar(255)
+  tecNameKH      String? @db.VarChar(255)
+  tecDescription String? @db.Text
+  tecOrder       Int?    @default(0)
+  tecStatus      Boolean @default(true)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_test_examinations_result {
+  exrID             Int                                     @id @default(autoincrement())
+  exrUsrPrentID     Int?
+  exrChildID        Int?
+  exrCategory       Int
+  exrGrade          String?                                 @db.VarChar(50)
+  exrTotalQuestions Int
+  exrCorrectAnswers Int
+  exrScore          Decimal                                 @db.Decimal(5, 2)
+  exrTimeTaken      Int?
+  exrStartTime      DateTime                                @db.DateTime(0)
+  exrEndTime        DateTime?                               @db.DateTime(0)
+  exrStatus         tbl_test_examinations_result_exrStatus? @default(started)
+
+  @@index([exrCategory], map: "exrCategory")
+  @@index([exrChildID], map: "exrChildID")
+  @@index([exrUsrPrentID], map: "exrUsrPrentID")
+}
+
+model tbl_test_examinations_result_guest {
+  exrID             Int       @id @default(autoincrement())
+  exrSessionID      String    @db.VarChar(255)
+  exrCategory       Int
+  exrGrade          String?   @db.VarChar(50)
+  exrTotalQuestions Int
+  exrCorrectAnswers Int
+  exrScore          Decimal   @db.Decimal(5, 2)
+  exrTimeTaken      Int?
+  exrStartTime      DateTime  @db.DateTime(0)
+  exrEndTime        DateTime? @db.DateTime(0)
+  exrIPAddress      String?   @db.VarChar(45)
+
+  @@index([exrCategory], map: "exrCategory")
+  @@index([exrSessionID], map: "exrSessionID")
+}
+
+model tbl_test_exercise {
+  texID         Int     @id @default(autoincrement())
+  texCategory   Int
+  texQuestion   String  @db.Text
+  texImage      String? @db.VarChar(255)
+  texSound      String? @db.VarChar(255)
+  texType       String? @db.VarChar(50)
+  texDifficulty Int?    @default(1)
+  texPoints     Int?    @default(1)
+  texOrder      Int?    @default(0)
+  texStatus     Boolean @default(true)
+
+  @@index([texCategory], map: "texCategory")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_test_user_answers {
+  id            Int                                  @id @default(autoincrement())
+  user_id       Int
+  child_id      Int?
+  question_id   Int
+  answer_id     Int?
+  answer_value  String?                              @db.VarChar(255)
+  exrgrade      String?                              @db.VarChar(50)
+  exrCategory   Int?
+  answer_status tbl_test_user_answers_answer_status? @default(unanswered)
+  is_correct    Boolean?
+  answer_time   DateTime                             @db.DateTime(0)
+  time_spent    Int?
+
+  @@index([answer_id], map: "answer_id")
+  @@index([child_id], map: "child_id")
+  @@index([question_id], map: "question_id")
+  @@index([user_id], map: "user_id")
+}
+
+model tbl_user_admin {
+  usaUserID      Int       @id @default(autoincrement())
+  usaFullName    String    @db.VarChar(255)
+  usaEmail       String    @unique(map: "usaEmail") @db.VarChar(255)
+  usaPassword    String    @db.VarChar(255)
+  usaUserType    String    @db.VarChar(50)
+  usaPhone       String?   @db.VarChar(20)
+  usaImage       String?   @db.VarChar(255)
+  usaCreatedDate DateTime  @db.DateTime(0)
+  usaStatus      Boolean   @default(true)
+  usaLastLogin   DateTime? @db.DateTime(0)
+  usaIPAddress   String?   @db.VarChar(45)
+
+  @@index([usaStatus], map: "usaStatus")
+  @@index([usaUserType], map: "usaUserType")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_user_test_randomization {
+  utrID       Int      @id @default(autoincrement())
+  usrID       Int
+  excParentID Int
+  randomize   String?  @db.Text
+  createdDate DateTime @db.DateTime(0)
+
+  @@index([excParentID], map: "excParentID")
+  @@index([usrID], map: "usrID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_users_register {
+  usrID           Int         @id @default(autoincrement())
+  usrName         String      @db.VarChar(255)
+  usrPhone        String      @unique(map: "usrPhone") @db.VarChar(20)
+  usrUserName     String?     @unique(map: "usrUserName") @db.VarChar(100)
+  usrEmail        String?     @db.VarChar(255)
+  usrPassword     String      @db.VarChar(255)
+  usrGrade        String?     @db.VarChar(50)
+  usrImage        String?     @db.VarChar(255)
+  usrRegDate      DateTime    @db.DateTime(0)
+  usrActivate     Boolean     @default(false)
+  usrActivateKey  String?     @db.Text
+  usaExpiredCode  String?     @db.VarChar(255)
+  usrStatus       Boolean     @default(true)
+  usrAllowSubject String?     @db.Text
+  usrValidUntil   DateTime?   @db.DateTime(0)
+  usrSecretWord   String?     @db.VarChar(255)
+  usrFacebookId   String?     @db.VarChar(255)
+  usrGoogleId     String?     @db.VarChar(255)
+  usrLastLogin    DateTime?   @db.DateTime(0)
+  usrLoginCount   Int?        @default(0)
+  usrIPAddress    String?     @db.VarChar(45)
+  tbl_child       tbl_child[]
+
+  @@index([usrActivate], map: "usrActivate")
+  @@index([usrEmail], map: "usrEmail")
+  @@index([usrStatus], map: "usrStatus")
+}
+
+model tbl_video_lesson {
+  vleID       Int     @id @default(autoincrement())
+  vleTitle    String  @db.VarChar(255)
+  vleVideoID  Int
+  vleCategory Int
+  vleGrade    String? @db.VarChar(50)
+  vleSubject  String? @db.VarChar(50)
+  vleOrder    Int?    @default(0)
+  vleStatus   Boolean @default(true)
+
+  @@index([vleCategory], map: "vleCategory")
+  @@index([vleVideoID], map: "vleVideoID")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tbl_videos {
+  vidID           Int      @id @default(autoincrement())
+  vidTitle        String   @db.VarChar(255)
+  vidTitleKH      String?  @db.VarChar(255)
+  vidDescription  String?  @db.Text
+  vidURL          String?  @db.VarChar(500)
+  vidYoutubeID    String?  @db.VarChar(50)
+  vidThumbnail    String?  @db.VarChar(255)
+  vidCategory     Int?
+  vidDuration     Int?
+  vidViews        Int?     @default(0)
+  vidOrder        Int?     @default(0)
+  vidUploadedBy   Int?
+  vidUploadedDate DateTime @db.DateTime(0)
+  vidStatus       Boolean  @default(true)
+
+  @@index([vidCategory], map: "vidCategory")
+  @@index([vidStatus], map: "vidStatus")
+}
+
+enum tbl_child_chiGender {
+  M
+  F
+}
+
+enum elfinder_file_read {
+  // 1 @map("1")
+  // 0 @map("0")
+}
+
+enum elfinder_trash_read {
+  // 1 @map("1")
+  // 0 @map("0")
+}
+
+enum elfinder_file_write {
+  // 1 @map("1")
+  // 0 @map("0")
+}
+
+enum elfinder_trash_write {
+  // 1 @map("1")
+  // 0 @map("0")
+}
+
+enum tbl_practise_history_phiCompletionStatus {
+  started
+  completed
+  abandoned
+}
+
+enum tbl_test_user_answers_answer_status {
+  answered
+  unanswered
+  skipped
+}
+
+enum elfinder_file_locked {
+  // 1 @map("1")
+  // 0 @map("0")
+}
+
+enum elfinder_trash_locked {
+  // 1 @map("1")
+  // 0 @map("0")
+}
+
+enum elfinder_file_hidden {
+  // 1 @map("1")
+  // 0 @map("0")
+}
+
+enum elfinder_trash_hidden {
+  // 1 @map("1")
+  // 0 @map("0")
+}
+
+enum tbl_submit_homework_shwStatus {
+  submitted
+  graded
+  returned
+}
+
+enum tbl_test_examinations_result_exrStatus {
+  started
+  completed
+  abandoned
+}

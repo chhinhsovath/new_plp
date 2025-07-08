@@ -5,7 +5,7 @@ import { useUser } from "@clerk/nextjs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Trophy, Clock, TrendingUp, Users, UserPlus, FileText, BarChart, MessageSquare, CreditCard, Video } from "lucide-react";
+import { BookOpen, Trophy, Clock, TrendingUp, Users, UserPlus, FileText, BarChart, MessageSquare, CreditCard, Video, Award } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
@@ -165,6 +165,18 @@ function StudentDashboard({ userData }: { userData: any }) {
 
       {/* Additional Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-8">
+        <Link href="/grades" className="block">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center">
+                <Award className="h-8 w-8 mb-2 text-yellow-600" />
+                <h3 className="font-semibold">My Grades</h3>
+                <p className="text-sm text-gray-600 mt-1">View performance</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
         <Link href="/live" className="block">
           <Card className="hover:shadow-lg transition-shadow cursor-pointer">
             <CardContent className="pt-6">
@@ -172,18 +184,6 @@ function StudentDashboard({ userData }: { userData: any }) {
                 <Video className="h-8 w-8 mb-2 text-orange-600" />
                 <h3 className="font-semibold">Live Classes</h3>
                 <p className="text-sm text-gray-600 mt-1">Join live sessions</p>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
-
-        <Link href="/payment/manage" className="block">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center text-center">
-                <CreditCard className="h-8 w-8 mb-2 text-indigo-600" />
-                <h3 className="font-semibold">Subscription</h3>
-                <p className="text-sm text-gray-600 mt-1">Manage plan</p>
               </div>
             </CardContent>
           </Card>

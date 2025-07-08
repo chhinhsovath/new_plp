@@ -553,20 +553,116 @@ export default function CreateAssignmentPage() {
 // Helper functions
 function getDefaultDataForType(type: string): any {
   switch (type) {
+    // Basic Question Types
     case "MULTIPLE_CHOICE":
       return { options: ["", "", "", ""], correctAnswer: 0 };
     case "TRUE_FALSE":
       return { correctAnswer: true };
-    case "FILL_IN_GAPS":
-      return { text: "", gaps: [] };
     case "SHORT_ANSWER":
       return { correctAnswer: "" };
     case "LONG_ANSWER":
       return { sampleAnswer: "", rubric: "" };
-    case "MATCHING":
-      return { pairs: [] };
+    case "FILL_IN_GAPS":
+      return { text: "", gaps: [] };
     case "DRAG_DROP":
       return { items: [], targets: [] };
+    case "MATCHING":
+      return { pairs: [] };
+    case "SORTING":
+      return { items: [], correctOrder: [] };
+    case "SEQUENCING":
+      return { items: [], correctOrder: [] };
+    case "LABELING":
+      return { imageUrl: "", labels: [], zones: [] };
+      
+    // Language Skills
+    case "LISTENING":
+      return { audioUrl: "", question: "", correctAnswer: "" };
+    case "SPEAKING":
+      return { prompt: "", duration: 60, rubric: [] };
+    case "DICTATION":
+      return { audioUrl: "", text: "" };
+    case "PRONUNCIATION":
+      return { word: "", audioUrl: "", phonetic: "" };
+    case "READING_COMPREHENSION":
+      return { passage: "", questions: [] };
+    case "VOCABULARY":
+      return { word: "", definition: "", options: [] };
+    case "GRAMMAR":
+      return { sentence: "", correctForm: "" };
+    case "SPELLING":
+      return { word: "", audioUrl: "" };
+    case "WORD_FORMATION":
+      return { rootWord: "", targetForm: "" };
+    case "SENTENCE_CONSTRUCTION":
+      return { words: [], correctSentence: "" };
+      
+    // Interactive Types
+    case "DRAWING":
+      return { prompt: "", referenceImage: "" };
+    case "IMAGE_SELECTION":
+      return { images: [], correctImageIds: [] };
+    case "IMAGE_ANNOTATION":
+      return { imageUrl: "", annotations: [] };
+    case "VIDEO_RESPONSE":
+      return { videoUrl: "", questions: [] };
+    case "AUDIO_RECORDING":
+      return { prompt: "", maxDuration: 120 };
+    case "CLICK_MAP":
+      return { imageUrl: "", hotspots: [] };
+    case "HOTSPOT":
+      return { imageUrl: "", areas: [] };
+    case "SLIDER":
+      return { min: 0, max: 100, correctValue: 50, unit: "" };
+    case "RATING":
+      return { scale: 5, correctRating: 3 };
+    case "POLL":
+      return { question: "", options: [] };
+      
+    // Math & Logic
+    case "CALCULATION":
+      return { expression: "", answer: 0 };
+    case "EQUATION":
+      return { equation: "", variable: "x", answer: 0 };
+    case "GRAPH_PLOTTING":
+      return { type: "line", points: [] };
+    case "NUMBER_LINE":
+      return { min: 0, max: 10, answer: 5 };
+    case "FRACTION":
+      return { numerator: 1, denominator: 2 };
+    case "GEOMETRY":
+      return { shape: "", measurements: {} };
+    case "PATTERN_RECOGNITION":
+      return { sequence: [], answer: "" };
+    case "LOGIC_PUZZLE":
+      return { puzzle: "", solution: "" };
+    case "CODING":
+      return { language: "python", starterCode: "", solution: "" };
+    case "FLOWCHART":
+      return { nodes: [], connections: [] };
+      
+    // Game-based
+    case "CROSSWORD":
+      return { grid: [], clues: { across: [], down: [] } };
+    case "WORD_SEARCH":
+      return { grid: [], words: [] };
+    case "MEMORY_GAME":
+      return { pairs: [] };
+    case "PUZZLE":
+      return { pieces: [], solution: [] };
+    case "QUIZ_GAME":
+      return { questions: [], timeLimit: 30 };
+    case "TIMED_CHALLENGE":
+      return { questions: [], timePerQuestion: 15 };
+    case "SCAVENGER_HUNT":
+      return { clues: [], items: [] };
+    case "ESCAPE_ROOM":
+      return { puzzles: [], code: "" };
+    case "BOARD_GAME":
+      return { board: [], rules: "" };
+    case "CARD_GAME":
+      return { deck: [], rules: "" };
+      
     default:
       return {};
   }

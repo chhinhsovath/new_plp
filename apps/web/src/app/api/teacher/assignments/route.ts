@@ -187,6 +187,16 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Trigger notification for new assignment
+    if (assignment.status === "PUBLISHED") {
+      const { NotificationTriggers } = await import("@/lib/notifications");
+      await NotificationTriggers.assignmentCreated(
+        assignment.classId,
+        assignment.id,
+        assignment.title
+      );
+    }
+
     return NextResponse.json({
       assignment,
     });
