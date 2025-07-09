@@ -1,18 +1,18 @@
 import { Router } from "express";
-import { authenticate, AuthRequest } from "../middleware/auth";
+import { authenticate } from "../middleware/auth";
 
-export const progressRouter = Router();
+export const progressRouter: Router = Router();
 
 progressRouter.use(authenticate);
 
 // Get user progress
-progressRouter.get("/", async (req: AuthRequest, res) => {
-  const userId = req.userId;
-  const { subject, startDate, endDate } = req.query;
+progressRouter.get("/", async (req, res) => {
+  const _userId = req.userId;
+  // const { subject, startDate, endDate } = req.query; // TODO: Use for filtering
 
   // TODO: Fetch from database
   const progress = {
-    userId,
+    userId: _userId,
     overall: {
       exercisesCompleted: 150,
       totalScore: 8500,
@@ -42,8 +42,8 @@ progressRouter.get("/", async (req: AuthRequest, res) => {
 });
 
 // Get detailed progress for a subject
-progressRouter.get("/:subject", async (req: AuthRequest, res) => {
-  const userId = req.userId;
+progressRouter.get("/:subject", async (req, res) => {
+  const _userId = req.userId;
   const { subject } = req.params;
 
   // TODO: Fetch from database

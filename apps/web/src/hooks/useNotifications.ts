@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSocket } from "./useSocket";
 
 interface Notification {
@@ -18,6 +18,7 @@ export function useNotifications() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const { markNotificationAsRead: socketMarkAsRead, markAllNotificationsAsRead: socketMarkAllAsRead } = useSocket();
+  const fetchNotificationsRef = useRef<() => Promise<void>>();
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -33,6 +34,9 @@ export function useNotifications() {
       setLoading(false);
     }
   }, []);
+
+  // Update ref on every render to maintain fresh closure
+  fetchNotificationsRef.current = fetchNotifications;
 
   const markAsRead = useCallback(async (notificationId: string) => {
     try {
@@ -79,8 +83,10 @@ export function useNotifications() {
   useEffect(() => {
     fetchNotifications();
 
-    // Set up polling for new notifications
-    const interval = setInterval(fetchNotifications, 30000); // Poll every 30 seconds
+    // Set up polling for new notifications using ref
+    const interval = setInterval(() => {
+      fetchNotificationsRef.current?.();
+    }, 30000); // Poll every 30 seconds
 
     // Listen for new notifications via custom event
     const handleNewNotification = (event: CustomEvent) => {
@@ -95,7 +101,7 @@ export function useNotifications() {
       clearInterval(interval);
       window.removeEventListener("new-notification", handleNewNotification as EventListener);
     };
-  }, [fetchNotifications]);
+  }, []); // Empty dependency array is now safe
 
   return {
     notifications,

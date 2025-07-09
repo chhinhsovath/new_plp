@@ -1,16 +1,17 @@
-import { authMiddleware } from "@clerk/nextjs";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs";
 
-export default authMiddleware({
-  publicRoutes: [
-    "/",
-    "/about",
-    "/api/webhook/clerk",
-    "/sign-in(.*)",
-    "/sign-up(.*)",
-  ],
-  ignoredRoutes: [
-    "/api/webhook/clerk"
-  ],
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/about",
+  "/api/webhook/clerk",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+]);
+
+export default clerkMiddleware((auth, request) => {
+  if (!isPublicRoute(request)) {
+    auth().protect();
+  }
 });
 
 export const config = {

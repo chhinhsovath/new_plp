@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { z } from "zod";
-import { authenticate, AuthRequest } from "../middleware/auth";
+import { authenticate } from "../middleware/auth";
 
-export const forumRouter = Router();
+export const forumRouter: Router = Router();
 
 forumRouter.use(authenticate);
 
@@ -14,7 +14,7 @@ const createPostSchema = z.object({
   tags: z.array(z.string()).optional(),
 });
 
-forumRouter.post("/posts", async (req: AuthRequest, res) => {
+forumRouter.post("/posts", async (req, res) => {
   const userId = req.userId;
   const data = createPostSchema.parse(req.body);
 
@@ -31,7 +31,7 @@ forumRouter.post("/posts", async (req: AuthRequest, res) => {
 
 // Get forum posts
 forumRouter.get("/posts", async (req, res) => {
-  const { subject, search, page = 1, limit = 20 } = req.query;
+  const { subject: _subject, search: _search, page = 1, limit = 20 } = req.query;
 
   // TODO: Fetch from database
   const posts = [
@@ -64,7 +64,7 @@ const createAnswerSchema = z.object({
   content: z.string().min(10),
 });
 
-forumRouter.post("/posts/:postId/answers", async (req: AuthRequest, res) => {
+forumRouter.post("/posts/:postId/answers", async (req, res) => {
   const userId = req.userId;
   const { postId } = req.params;
   const data = createAnswerSchema.parse(req.body);

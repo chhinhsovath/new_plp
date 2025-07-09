@@ -1,15 +1,16 @@
 import { Router } from "express";
 import { z } from "zod";
-import { authenticate, authorize, AuthRequest } from "../middleware/auth";
-import { AppError } from "../middleware/error-handler";
+import { authenticate, authorize, enrichUserData } from "../middleware/auth";
 
-export const usersRouter = Router();
 
-// All user routes require authentication
+export const usersRouter: Router = Router();
+
+// All user routes require authentication and user data enrichment
 usersRouter.use(authenticate);
+usersRouter.use(enrichUserData);
 
 // Get current user profile
-usersRouter.get("/me", async (req: AuthRequest, res) => {
+usersRouter.get("/me", async (req, res) => {
   const userId = req.userId;
   
   // TODO: Fetch from database
@@ -34,7 +35,7 @@ const updateProfileSchema = z.object({
   preferredLanguage: z.enum(["km", "en"]).optional(),
 });
 
-usersRouter.put("/me", async (req: AuthRequest, res) => {
+usersRouter.put("/me", async (req, res) => {
   const userId = req.userId;
   const data = updateProfileSchema.parse(req.body);
 
@@ -46,8 +47,8 @@ usersRouter.put("/me", async (req: AuthRequest, res) => {
 });
 
 // Parent-specific routes
-usersRouter.get("/children", authorize("parent"), async (req: AuthRequest, res) => {
-  const parentId = req.userId;
+usersRouter.get("/children", authorize("parent"), async (req, res) => {
+  const _parentId = req.userId;
 
   // TODO: Fetch from database
   const children = [
@@ -72,8 +73,8 @@ const addChildSchema = z.object({
   password: z.string().min(6),
 });
 
-usersRouter.post("/children", authorize("parent"), async (req: AuthRequest, res) => {
-  const parentId = req.userId;
+usersRouter.post("/children", authorize("parent"), async (req, res) => {
+  const _parentId = req.userId;
   const data = addChildSchema.parse(req.body);
 
   // TODO: Create child account in database
@@ -82,7 +83,7 @@ usersRouter.post("/children", authorize("parent"), async (req: AuthRequest, res)
     child: {
       id: "new-child-id",
       ...data,
-      parentId,
+      parentId: _parentId,
     },
   });
 });

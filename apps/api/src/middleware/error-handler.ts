@@ -5,6 +5,7 @@ export class AppError extends Error {
   constructor(
     public statusCode: number,
     public message: string,
+    public details?: any,
     public isOperational = true
   ) {
     super(message);
@@ -14,9 +15,9 @@ export class AppError extends Error {
 
 export const errorHandler = (
   err: Error,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   if (err instanceof ZodError) {
     return res.status(400).json({
@@ -28,11 +29,12 @@ export const errorHandler = (
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
       error: err.message,
+      details: err.details,
     });
   }
 
   console.error("Unhandled error:", err);
-  res.status(500).json({
+  return res.status(500).json({
     error: "Internal server error",
   });
 };

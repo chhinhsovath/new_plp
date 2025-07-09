@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { z } from "zod";
 import { authenticate } from "../middleware/auth";
-import { AppError } from "../middleware/error-handler";
 
-export const exercisesRouter = Router();
+
+export const exercisesRouter: Router = Router();
 
 // All exercise routes require authentication
 exercisesRouter.use(authenticate);
@@ -11,7 +11,7 @@ exercisesRouter.use(authenticate);
 // Get exercises by subject and type
 exercisesRouter.get("/:subject/:type", async (req, res) => {
   const { subject, type } = req.params;
-  const { grade, difficulty, limit = 10 } = req.query;
+  const { grade, difficulty, limit: _limit = 10 } = req.query;
 
   // TODO: Fetch from database
   const exercises = [
@@ -42,7 +42,7 @@ const submitAnswerSchema = z.object({
 
 exercisesRouter.post("/:exerciseId/submit", async (req, res) => {
   const { exerciseId } = req.params;
-  const data = submitAnswerSchema.parse(req.body);
+  const _data = submitAnswerSchema.parse(req.body);
 
   // TODO: Validate answer and save to database
   const isCorrect = true; // Placeholder

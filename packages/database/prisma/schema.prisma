@@ -31,6 +31,12 @@ model User {
   payments       Payment[]
   notifications  Notification[]
   notificationPreferences NotificationPreference?
+  videoProgress  VideoProgress[]
+  resourceDownloads ResourceDownload[]
+  pdEnrollments  PDEnrollment[]
+  pdModuleCompletions PDModuleCompletion[]
+  pdIssuedCertificates PDIssuedCertificate[]
+  assessmentAttempts AssessmentAttempt[]
 
   @@index([email])
   @@index([clerkId])
@@ -67,7 +73,7 @@ model TeacherProfile {
 // Educational Content
 model Subject {
   id          String   @id @default(cuid())
-  code        String   @unique // e.g., "math", "khmer", "english", "science"
+  code        String   @unique // e.g., "math", "khmer", "english", "science", "social_studies", "calm"
   name        String
   nameKh      String
   description String   @db.Text
@@ -77,6 +83,9 @@ model Subject {
 
   lessons     Lesson[]
   exercises   Exercise[]
+  videos      Video[]
+  libraryResources LibraryResource[]
+  assessments Assessment[]
   
   @@map("new_subjects")
 }
@@ -95,6 +104,7 @@ model Lesson {
 
   exercises   Exercise[]
   progress    Progress[]
+  videos      Video[]
 
   @@index([subjectId, grade])
   @@map("new_lessons")
@@ -123,6 +133,233 @@ model Exercise {
   @@index([subjectId, type, grade])
   @@index([lessonId])
   @@map("new_exercises")
+}
+
+// Video Content Management
+model Video {
+  id          String   @id @default(cuid())
+  title       String
+  titleKh     String?
+  description String?  @db.Text
+  url         String
+  thumbnailUrl String?
+  duration    Int      // in seconds
+  subjectId   String
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+  grade       String
+  lessonId    String?
+  lesson      Lesson?  @relation(fields: [lessonId], references: [id])
+  views       Int      @default(0)
+  uploadedBy  String
+  uploadedAt  DateTime @default(now())
+  tags        Json     // Array of tags
+  transcriptUrl String?
+  
+  videoProgress VideoProgress[]
+  
+  @@index([subjectId, grade])
+  @@index([lessonId])
+  @@map("new_videos")
+}
+
+model VideoProgress {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  videoId       String
+  video         Video    @relation(fields: [videoId], references: [id])
+  watchedSeconds Int
+  completed     Boolean  @default(false)
+  lastWatchedAt DateTime @updatedAt
+  
+  @@unique([userId, videoId])
+  @@map("new_video_progress")
+}
+
+// Digital Library System
+model LibraryResource {
+  id          String       @id @default(cuid())
+  title       String
+  titleKh     String?
+  description String?      @db.Text
+  type        ResourceType
+  fileUrl     String
+  fileSize    Int          // in bytes
+  subjectId   String?
+  subject     Subject?     @relation(fields: [subjectId], references: [id])
+  grade       String?
+  tags        Json         // Array of tags
+  downloads   Int          @default(0)
+  uploadedBy  String
+  uploadedAt  DateTime     @default(now())
+  
+  userDownloads ResourceDownload[]
+  
+  @@index([subjectId, grade])
+  @@index([type])
+  @@map("new_library_resources")
+}
+
+model ResourceDownload {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  resourceId String
+  resource   LibraryResource @relation(fields: [resourceId], references: [id])
+  downloadedAt DateTime @default(now())
+  
+  @@index([userId])
+  @@map("new_resource_downloads")
+}
+
+// Professional Development System
+model ProfessionalDevelopmentCourse {
+  id          String   @id @default(cuid())
+  title       String
+  titleKh     String?
+  description String   @db.Text
+  duration    Int      // in hours
+  level       PDLevel
+  
+  modules     PDModule[]
+  enrollments PDEnrollment[]
+  certificate PDCertificate?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("new_pd_courses")
+}
+
+model PDModule {
+  id          String   @id @default(cuid())
+  courseId    String
+  course      ProfessionalDevelopmentCourse @relation(fields: [courseId], references: [id])
+  title       String
+  titleKh     String?
+  content     Json     // Rich content with videos, texts, activities
+  order       Int
+  duration    Int      // in minutes
+  
+  completions PDModuleCompletion[]
+  
+  @@index([courseId])
+  @@map("new_pd_modules")
+}
+
+model PDEnrollment {
+  id          String   @id @default(cuid())
+  teacherId   String
+  teacher     User     @relation(fields: [teacherId], references: [id])
+  courseId    String
+  course      ProfessionalDevelopmentCourse @relation(fields: [courseId], references: [id])
+  enrolledAt  DateTime @default(now())
+  completedAt DateTime?
+  progress    Float    @default(0) // 0-100
+  
+  @@unique([teacherId, courseId])
+  @@map("new_pd_enrollments")
+}
+
+model PDModuleCompletion {
+  id          String   @id @default(cuid())
+  moduleId    String
+  module      PDModule @relation(fields: [moduleId], references: [id])
+  teacherId   String
+  teacher     User     @relation(fields: [teacherId], references: [id])
+  completedAt DateTime @default(now())
+  
+  @@unique([moduleId, teacherId])
+  @@map("new_pd_module_completions")
+}
+
+model PDCertificate {
+  id          String   @id @default(cuid())
+  courseId    String   @unique
+  course      ProfessionalDevelopmentCourse @relation(fields: [courseId], references: [id])
+  templateUrl String
+  
+  issuedCertificates PDIssuedCertificate[]
+  
+  @@map("new_pd_certificates")
+}
+
+model PDIssuedCertificate {
+  id            String   @id @default(cuid())
+  certificateId String
+  certificate   PDCertificate @relation(fields: [certificateId], references: [id])
+  teacherId     String
+  teacher       User     @relation(fields: [teacherId], references: [id])
+  issuedAt      DateTime @default(now())
+  certificateUrl String
+  
+  @@unique([certificateId, teacherId])
+  @@map("new_pd_issued_certificates")
+}
+
+// Assessment System (EGRA, EGMA, etc.)
+model Assessment {
+  id          String   @id @default(cuid())
+  title       String
+  titleKh     String?
+  type        AssessmentType
+  grade       String
+  subjectId   String?
+  subject     Subject? @relation(fields: [subjectId], references: [id])
+  duration    Int      // in minutes
+  
+  questions   AssessmentQuestion[]
+  attempts    AssessmentAttempt[]
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([type, grade])
+  @@map("new_assessments")
+}
+
+model AssessmentQuestion {
+  id          String   @id @default(cuid())
+  assessmentId String
+  assessment  Assessment @relation(fields: [assessmentId], references: [id])
+  question    Json     // Flexible question format
+  correctAnswer Json
+  points      Int
+  order       Int
+  
+  responses   AssessmentResponse[]
+  
+  @@index([assessmentId])
+  @@map("new_assessment_questions")
+}
+
+model AssessmentAttempt {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  assessmentId String
+  assessment  Assessment @relation(fields: [assessmentId], references: [id])
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  score       Float?
+  
+  responses   AssessmentResponse[]
+  
+  @@index([userId, assessmentId])
+  @@map("new_assessment_attempts")
+}
+
+model AssessmentResponse {
+  id          String   @id @default(cuid())
+  attemptId   String
+  attempt     AssessmentAttempt @relation(fields: [attemptId], references: [id])
+  questionId  String
+  question    AssessmentQuestion @relation(fields: [questionId], references: [id])
+  answer      Json
+  isCorrect   Boolean
+  timeSpent   Int      // in seconds
+  
+  @@unique([attemptId, questionId])
+  @@map("new_assessment_responses")
 }
 
 model ExerciseAttempt {
@@ -293,6 +530,31 @@ enum NotificationType {
   ACHIEVEMENT_EARNED
   SUBSCRIPTION_EXPIRING
   SYSTEM_ALERT
+}
+
+enum ResourceType {
+  PDF
+  EBOOK
+  WORKSHEET
+  PRESENTATION
+  TEMPLATE
+  GUIDE
+  OTHER
+}
+
+enum PDLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum AssessmentType {
+  EGRA
+  EGMA
+  PROFICIENCY_TEST
+  GRADE_PROGRESSION
+  DIAGNOSTIC
+  PLACEMENT
 }
 
 model Notification {

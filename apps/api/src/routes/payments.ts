@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { z } from "zod";
-import { authenticate, AuthRequest } from "../middleware/auth";
+import { authenticate } from "../middleware/auth";
 
-export const paymentsRouter = Router();
+export const paymentsRouter: Router = Router();
 
 paymentsRouter.use(authenticate);
 
@@ -14,8 +14,8 @@ const createPaymentSchema = z.object({
   description: z.string(),
 });
 
-paymentsRouter.post("/create-intent", async (req: AuthRequest, res) => {
-  const userId = req.userId;
+paymentsRouter.post("/create-intent", async (req, res) => {
+  const _userId = req.userId;
   const data = createPaymentSchema.parse(req.body);
 
   // TODO: Integrate with payment providers
@@ -30,7 +30,7 @@ paymentsRouter.post("/create-intent", async (req: AuthRequest, res) => {
 });
 
 // Confirm payment
-paymentsRouter.post("/confirm/:paymentIntentId", async (req: AuthRequest, res) => {
+paymentsRouter.post("/confirm/:paymentIntentId", async (req, res) => {
   const { paymentIntentId } = req.params;
 
   // TODO: Confirm with payment provider
@@ -42,8 +42,8 @@ paymentsRouter.post("/confirm/:paymentIntentId", async (req: AuthRequest, res) =
 });
 
 // Get payment history
-paymentsRouter.get("/history", async (req: AuthRequest, res) => {
-  const userId = req.userId;
+paymentsRouter.get("/history", async (req, res) => {
+  const _userId = req.userId;
 
   // TODO: Fetch from database
   const payments = [

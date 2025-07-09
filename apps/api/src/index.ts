@@ -6,6 +6,7 @@ import morgan from "morgan";
 import { rateLimit } from "express-rate-limit";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { clerkMiddleware } from "@clerk/express";
 import dotenv from "dotenv";
 
 import { errorHandler } from "./middleware/error-handler";
@@ -17,6 +18,10 @@ import { progressRouter } from "./routes/progress";
 import { forumRouter } from "./routes/forum";
 import { paymentsRouter } from "./routes/payments";
 import { adminRouter } from "./routes/admin";
+import { videosRouter } from "./routes/videos";
+import { libraryRouter } from "./routes/library";
+import { pdRouter } from "./routes/professional-development";
+import { assessmentsRouter } from "./routes/assessments";
 
 dotenv.config();
 
@@ -46,8 +51,11 @@ const limiter = rateLimit({
 });
 app.use("/api", limiter);
 
+// Clerk authentication middleware - must be before any authenticated routes
+app.use(clerkMiddleware());
+
 // Health check
-app.get("/health", (req, res) => {
+app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
@@ -60,6 +68,10 @@ app.use("/api/progress", progressRouter);
 app.use("/api/forum", forumRouter);
 app.use("/api/payments", paymentsRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/videos", videosRouter);
+app.use("/api/library", libraryRouter);
+app.use("/api/pd", pdRouter);
+app.use("/api/assessments", assessmentsRouter);
 
 // Socket.io handlers
 io.on("connection", (socket) => {

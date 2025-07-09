@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@plp/database";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";

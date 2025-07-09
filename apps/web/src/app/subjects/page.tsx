@@ -49,38 +49,38 @@ export default function SubjectsPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Subjects</h1>
-        <p className="text-gray-600">Choose a subject to start learning</p>
+    <div className="container mx-auto py-4 sm:py-8 px-4 max-w-7xl">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Subjects</h1>
+        <p className="text-sm sm:text-base text-gray-600">Choose a subject to start learning</p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {subjects.map((subject) => (
           <Link key={subject.id} href={`/subjects/${subject.code}`}>
             <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
+              <CardHeader className="p-3 sm:p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-4xl">{subject.icon}</span>
+                  <span className="text-2xl sm:text-4xl">{subject.icon}</span>
                   {subject.progress !== undefined && (
                     <Badge variant="secondary">{subject.progress}%</Badge>
                   )}
                 </div>
-                <CardTitle>{subject.name}</CardTitle>
-                <CardDescription className="text-sm">
+                <CardTitle className="text-base sm:text-lg">{subject.name}</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
                   {subject.nameKh}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600 mb-4">{subject.description}</p>
+              <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+                <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-2">{subject.description}</p>
                 
-                <div className="flex items-center justify-between text-sm text-gray-500">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs sm:text-sm text-gray-500 gap-1 sm:gap-0">
                   <div className="flex items-center gap-1">
-                    <BookOpen className="w-4 h-4" />
+                    <BookOpen className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>{subject.lessons || 0} lessons</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Target className="w-4 h-4" />
+                    <Target className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>All grades</span>
                   </div>
                 </div>
@@ -90,14 +90,14 @@ export default function SubjectsPage() {
         ))}
       </div>
 
-      <div className="mt-12 bg-blue-50 rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-3">Learning Tips</h2>
-        <div className="grid gap-4 md:grid-cols-3">
+      <div className="mt-8 sm:mt-12 bg-blue-50 rounded-lg p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold mb-3">Learning Tips</h2>
+        <div className="grid gap-4 sm:grid-cols-3">
           <div className="flex gap-3">
-            <Clock className="w-5 h-5 text-blue-600 mt-1" />
+            <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mt-0.5 sm:mt-1" />
             <div>
-              <h3 className="font-medium">Study Daily</h3>
-              <p className="text-sm text-gray-600">15-30 minutes per day is better than long sessions</p>
+              <h3 className="text-sm sm:text-base font-medium">Study Daily</h3>
+              <p className="text-xs sm:text-sm text-gray-600">15-30 minutes per day is better than long sessions</p>
             </div>
           </div>
           <div className="flex gap-3">

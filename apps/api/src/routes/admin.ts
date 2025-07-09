@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { authenticate, authorize } from "../middleware/auth";
 
-export const adminRouter = Router();
+export const adminRouter: Router = Router();
 
 // All admin routes require admin role
-adminRouter.use(authenticate, authorize("admin"));
+adminRouter.use(authenticate);
+adminRouter.use(authorize("admin"));
 
 // Dashboard stats
-adminRouter.get("/stats", async (req, res) => {
+adminRouter.get("/stats", async (_req, res) => {
   // TODO: Fetch from database
   const stats = {
     totalUsers: 15420,
@@ -29,7 +30,7 @@ adminRouter.get("/stats", async (req, res) => {
 
 // User management
 adminRouter.get("/users", async (req, res) => {
-  const { page = 1, limit = 20, search, role } = req.query;
+  const { page = 1, limit = 20, search: _search, role: _role } = req.query;
 
   // TODO: Fetch from database
   const users = [
@@ -55,8 +56,8 @@ adminRouter.get("/users", async (req, res) => {
 });
 
 // Content management
-adminRouter.get("/content/exercises", async (req, res) => {
-  const { subject, type, status } = req.query;
+adminRouter.get("/content/exercises", async (_req, res) => {
+  // const { subject, type, status } = req.query; // TODO: Use for filtering
 
   // TODO: Fetch from database
   const exercises = [

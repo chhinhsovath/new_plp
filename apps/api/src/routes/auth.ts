@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { z } from "zod";
-import { AppError } from "../middleware/error-handler";
 
-export const authRouter = Router();
+
+export const authRouter: Router = Router();
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -20,7 +20,7 @@ const loginSchema = z.object({
 
 // These endpoints work with Clerk authentication on the frontend
 authRouter.post("/register", async (req, res) => {
-  const data = registerSchema.parse(req.body);
+  const _data = registerSchema.parse(req.body);
   
   // Here you would typically:
   // 1. Create user in your database
@@ -31,14 +31,14 @@ authRouter.post("/register", async (req, res) => {
   res.json({
     message: "Registration successful",
     user: {
-      email: data.email,
-      role: data.role,
+      email: _data.email,
+      role: _data.role,
     },
   });
 });
 
 authRouter.post("/login", async (req, res) => {
-  const data = loginSchema.parse(req.body);
+  const _data = loginSchema.parse(req.body);
   
   // Login is handled by Clerk on frontend
   // This endpoint might be used for custom login flows
@@ -48,7 +48,7 @@ authRouter.post("/login", async (req, res) => {
   });
 });
 
-authRouter.post("/logout", async (req, res) => {
+authRouter.post("/logout", async (_req, res) => {
   // Logout is handled by Clerk on frontend
   res.json({
     message: "Logout successful",

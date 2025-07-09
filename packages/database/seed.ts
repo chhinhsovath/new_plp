@@ -53,6 +53,30 @@ async function main() {
         order: 4,
       },
     }),
+    prisma.subject.upsert({
+      where: { code: "social_studies" },
+      update: {},
+      create: {
+        code: "social_studies",
+        name: "Social Studies",
+        nameKh: "សិក្សាសង្គម",
+        description: "History, geography, and society",
+        icon: "🌍",
+        order: 5,
+      },
+    }),
+    prisma.subject.upsert({
+      where: { code: "calm" },
+      update: {},
+      create: {
+        code: "calm",
+        name: "Character, Arts, Life Skills & Music",
+        nameKh: "ចរិយា សិល្បៈ ជីវិត និងតន្ត្រី",
+        description: "Character development, arts, life skills, and music education",
+        icon: "🎨",
+        order: 6,
+      },
+    }),
   ]);
 
   console.log("Created subjects:", subjects.map((s) => s.name).join(", "));
